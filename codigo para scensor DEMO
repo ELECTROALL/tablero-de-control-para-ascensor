@@ -1,0 +1,80 @@
+// Sensores de piso
+const int s1a = 2;
+const int s2a = 3;
+const int s3a = 4;
+
+// Botones de llamada
+const int b1a = 5;
+const int b2a = 6;
+const int b3a = 7;
+
+// Salidas motor
+const int m_up   = 8;   // motor sube
+const int m_down = 9;   // motor baja
+
+int pisoActual = 0;
+int destino = 0;
+
+void setup() {
+  // Sensores
+  pinMode(s1a, INPUT);
+  pinMode(s2a, INPUT);
+  pinMode(s3a, INPUT);
+
+  // Botones
+  pinMode(b1a, INPUT);
+  pinMode(b2a, INPUT);
+  pinMode(b3a, INPUT);
+
+  // Motor
+  pinMode(m_up, OUTPUT);
+  pinMode(m_down, OUTPUT);
+
+  digitalWrite(m_up, LOW);
+  digitalWrite(m_down, LOW);
+
+  // Inicializar piso actual
+  pisoActual = leerPiso();
+}
+
+void loop() {
+  // Leer botones de llamada
+  if (digitalRead(b1a)) destino = 1;
+  if (digitalRead(b2a)) destino = 2;
+  if (digitalRead(b3a)) destino = 3;
+
+  pisoActual = leerPiso();
+
+  // Movimiento del ascensor
+  if (destino > 0) {
+    if (pisoActual < destino) {
+      // Subir
+      digitalWrite(m_up, HIGH);
+      digitalWrite(m_down, LOW);
+    } 
+    else if (pisoActual > destino) {
+      // Bajar
+      digitalWrite(m_up, LOW);
+      digitalWrite(m_down, HIGH);
+    } 
+    else {
+      // Llegó al destino
+      digitalWrite(m_up, LOW);
+      digitalWrite(m_down, LOW);
+      destino = 0; // limpiar destino
+    }
+  } 
+  else {
+    // Sin destino → reposo
+    digitalWrite(m_up, LOW);
+    digitalWrite(m_down, LOW);
+  }
+}
+
+// Función para detectar piso actual
+int leerPiso() {
+  if (digitalRead(s1a)) return 1;
+  if (digitalRead(s2a)) return 2;
+  if (digitalRead(s3a)) return 3;
+  return 0; // Ningún sensor activo
+}
